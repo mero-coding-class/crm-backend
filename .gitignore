@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pyo
+*.pyd
+*.py.class
+
+# Django
+db.sqlite3
+*.log
+media/
+staticfiles/
+
+# Environment
+#.env
+.env.*
+
+# VSCode
+.vscode/
+
+# Docker
+*.pid
+*.seed
+*.bak
+*.swp
+docker-compose.override.yml
+
+# Byte-compiled / optimized / DLL files
+*.so
+
+# Virtual environments
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Migrations
+**/migrations/*.pyc
+**/migrations/*.pyo
+**/migrations/*.pyd
+**/migrations/__pycache__/
