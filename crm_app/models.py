@@ -82,11 +82,11 @@ class Lead(models.Model):
 
     # Main fields
     status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.NEW)
-    add_date = models.DateField(auto_now_add=True)
+    add_date = models.DateField(auto_now_add=True, null=True)
     parents_name = models.CharField(max_length=255, blank=True)
-    student_name = models.CharField(max_length=255)
-    email = models.EmailField()
-    phone_number = models.CharField(max_length=30)
+    student_name = models.CharField(max_length=255, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    phone_number = models.CharField(max_length=30, blank=True)
     whatsapp_number = models.CharField(max_length=30, blank=True)
     age = models.CharField(max_length=30, blank=True)
     grade = models.CharField(max_length=30, blank=True)
@@ -112,7 +112,7 @@ class Lead(models.Model):
     post_code = models.CharField(max_length=20, blank=True)
 
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='leads')
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -124,17 +124,16 @@ class Lead(models.Model):
 
 
 class Enrollment(models.Model):
-    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='enrollments')
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='enrollments', null=True, blank=True)
     course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True)
-    total_payment = models.DecimalField(max_digits=10, decimal_places=2)
+    total_payment = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     first_installment = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     second_installment = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     third_installment = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     last_pay_date = models.DateField(null=True, blank=True)
     payment_completed = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.lead.student_name} - {self.course.course_name if self.course else ''}"
-
