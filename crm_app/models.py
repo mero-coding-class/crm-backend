@@ -36,7 +36,6 @@ class Lead(models.Model):
         INTERESTED = 'Interested', 'Interested'
         INPROGRESS = 'inProgress', 'In Progress'
         ACTIVE = 'Active', 'Active'
-        CLOSED = 'Closed', 'Closed'
         CONVERTED = 'Converted', 'Converted'
         LOST = 'Lost', 'Lost'
         JUNK = 'Junk', 'Junk'
@@ -71,7 +70,7 @@ class Lead(models.Model):
 
     # Source choices
     class SourceChoices(models. TextChoices):
-        WHATSAPP = 'WhatsApp', 'WhatsApp'
+        WHATSAPP_VIBER = 'WhatsApp/Viber', 'WhatsApp/Viber'
         FACEBOOK = 'Facebook', 'Facebook'
         WEBSITE  = 'Website', 'Website'
         EMAIL = 'Email', 'Email'
