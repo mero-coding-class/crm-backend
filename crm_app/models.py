@@ -26,13 +26,6 @@ class Course(models.Model):
         return self.course_name
     
 
-class CodingExperience(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Lead(models.Model):
     # Status choices
     class StatusChoices(models.TextChoices):
@@ -64,16 +57,16 @@ class Lead(models.Model):
         YES = 'Yes', 'Yes'
         NO = 'No', 'No'
 
-    # Coding experience choices
-    # class CodingExperienceChoices(models.TextChoices):
-    #     NONE = 'None', 'None'
-    #     BASIC_PYTHON = 'Basic Python', 'Basic Python'
-    #     INTERMEDIATE_CPP = 'Intermediate C++', 'Intermediate C++'
-    #     ARDUINO = 'Arduino', 'Arduino'
-    #     SOME_LINUX = 'Some Linux', 'Some Linux'
-    #     ADVANCED_PYTHON = 'Advanced Python', 'Advanced Python'
-    #     BASIC_JAVA = 'Basic Java', 'Basic Java'
-    #     OTHER = 'Other', 'Other'
+    #Coding experience choices
+    class CodingExperienceChoices(models.TextChoices):
+        NONE = 'None', 'None'
+        BASIC_PYTHON = 'Basic Python', 'Basic Python'
+        INTERMEDIATE_CPP = 'Intermediate C++', 'Intermediate C++'
+        ARDUINO = 'Arduino', 'Arduino'
+        SOME_LINUX = 'Some Linux', 'Some Linux'
+        ADVANCED_PYTHON = 'Advanced Python', 'Advanced Python'
+        BASIC_JAVA = 'Basic Java', 'Basic Java'
+        OTHER = 'Other', 'Other'
 
     # Source choices
     class SourceChoices(models. TextChoices):
@@ -100,8 +93,8 @@ class Lead(models.Model):
     course = models.ForeignKey('Course', on_delete=models.SET_NULL, null=True, blank=True)
     class_type = models.CharField(max_length=20, choices=ClassTypeChoices.choices, blank=True)
     shift = models.CharField(max_length=50, blank=True)
-    # previous_coding_experience = models.CharField(max_length=30, choices=CodingExperienceChoices.choices, blank=True)
-    previous_coding_experience = models.ForeignKey(CodingExperience, on_delete=models.SET_NULL, null=True, blank=True)
+    previous_coding_experience = models.CharField(max_length=30, choices=CodingExperienceChoices.choices, blank=True, default=CodingExperienceChoices.NONE)
+    #previous_coding_experience = models.ForeignKey(CodingExperience, on_delete=models.SET_NULL, null=True, blank=True)
     last_call = models.DateField(null=True, blank=True)
     next_call = models.DateField(null=True, blank=True)
     value = models.CharField(max_length=50, blank=True)
