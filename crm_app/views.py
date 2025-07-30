@@ -4,6 +4,18 @@ from .models import User, Course
 from .serializers import *
 from .permissions import IsSuperadminOrAdmin
 
+class LeadListCreateView(generics.ListCreateAPIView):
+    queryset = Lead.objects.all()
+    serializer_class = LeadSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class LeadRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Lead.objects.all()
+    serializer_class = LeadSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
 class CourseListCreateView(generics.ListCreateAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer

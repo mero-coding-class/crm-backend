@@ -52,12 +52,12 @@ class Lead(models.Model):
         BANK_TRANSFER = 'Bank Transfer', 'Bank Transfer'    
         CHEQUE = 'Cheque', 'Cheque'
 
-    #Device Choices
+    # Device Choices
     class DeviceChoices(models.TextChoices):
         YES = 'Yes', 'Yes'
         NO = 'No', 'No'
 
-    #Coding experience choices
+    # Previous Coding experience choices
     class CodingExperienceChoices(models.TextChoices):
         NONE = 'None', 'None'
         BASIC_PYTHON = 'Basic Python', 'Basic Python'
@@ -79,6 +79,22 @@ class Lead(models.Model):
         LINKEDIN = 'LinkedIn', 'LinkedIn'
         OTHER = 'Other', 'Other'
 
+    # Shift choices
+    class ShiftChoices(models.TextChoices):
+        SEVEN_NINE_AM = '7 A.M. - 9 A.M.', '7 A.M. - 9 A.M.'
+        EIGHT_TEN_AM = '8 A.M. - 10 A.M.', '8 A.M. - 10 A.M.'
+        TEN_TWELVE_AM = '10 A.M. - 12 P.M.', '10 A.M. - 12 P.M.'
+        ELEVEN_ONE_PM = '11 A.M. - 1 P.M.', '11 A.M. - 1 P.M.'
+        TWELVE_TWO_PM = '12 P.M. - 2 P.M.', '12 P.M. - 2 P.M.'
+        TWO_FOUR_PM = '2 P.M. - 4 P.M.', '2 P.M. - 4 P.M.'
+        TWO_THIRTY_FOUR_THIRTY_PM = '2:30 P.M. - 4:30 P.M.', '2:30 P.M. - 4:30 P.M.'
+        FOUR_SIX_PM = '4 P.M. - 6 P.M.', '4 P.M. - 6 P.M.'
+        FOUR_THIRTY_SIX_THIRTY_PM = '4:30 P.M. - 6:30 P.M.', '4:30 P.M. - 6:30 P.M.'
+        FIVE_SEVEN_PM = '5 P.M. - 7 P.M.', '5 P.M. - 7 P.M.'
+        SIX_SEVEN_PM = '6 P.M. - 7 P.M.', '6 P.M. - 7 P.M.'
+        SIX_EIGHT_PM = '6 P.M. - 8 P.M.', '6 P.M. - 8 P.M.'
+        SEVEN_EIGHT_PM = '7 P.M. - 8 P.M.', '7 P.M. - 8 P.M.'
+
     status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.NEW)
     add_date = models.DateField(auto_now_add=True, null=True)  # required by default
     parents_name = models.CharField(max_length=255)
@@ -93,7 +109,7 @@ class Lead(models.Model):
     class_type = models.CharField(max_length=20, choices=ClassTypeChoices.choices)
 
     # All other fields are optional
-    shift = models.CharField(max_length=50, blank=True)
+    shift = models.CharField(max_length=50, choices = ShiftChoices.choices ,blank=True)
     previous_coding_experience = models.CharField(
         max_length=30, choices=CodingExperienceChoices.choices, blank=True, default=CodingExperienceChoices.NONE
     )

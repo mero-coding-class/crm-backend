@@ -1,5 +1,10 @@
 from rest_framework import serializers
-from .models import User, Course
+from .models import User, Course, Lead
+
+class LeadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lead
+        fields = '__all__'
 
 
 class CourseSerializer(serializers.ModelSerializer):
