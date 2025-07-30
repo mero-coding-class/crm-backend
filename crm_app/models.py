@@ -79,22 +79,24 @@ class Lead(models.Model):
         LINKEDIN = 'LinkedIn', 'LinkedIn'
         OTHER = 'Other', 'Other'
 
-    # Main fields
     status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.NEW)
-    add_date = models.DateField(auto_now_add=True, null=True)
-    parents_name = models.CharField(max_length=255, blank=True)
-    student_name = models.CharField(max_length=255, blank=True)
-    email = models.EmailField(null=True, blank=True)
-    phone_number = models.CharField(max_length=30, blank=True)
-    whatsapp_number = models.CharField(max_length=30, blank=True)
-    age = models.CharField(max_length=30, blank=True)
-    grade = models.CharField(max_length=30, blank=True)
-    source = models.CharField(max_length=30, choices=SourceChoices.choices, blank=True)
-    course = models.ForeignKey('Course', on_delete=models.SET_NULL, null=True, blank=True)
-    class_type = models.CharField(max_length=20, choices=ClassTypeChoices.choices, blank=True)
+    add_date = models.DateField(auto_now_add=True, null=True)  # required by default
+    parents_name = models.CharField(max_length=255)
+    student_name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=30)
+    whatsapp_number = models.CharField(max_length=30)
+    age = models.CharField(max_length=30)
+    grade = models.CharField(max_length=30)
+    source = models.CharField(max_length=30, choices=SourceChoices.choices)
+    course = models.ForeignKey('Course', on_delete=models.SET_NULL, null=True)
+    class_type = models.CharField(max_length=20, choices=ClassTypeChoices.choices)
+
+    # All other fields are optional
     shift = models.CharField(max_length=50, blank=True)
-    previous_coding_experience = models.CharField(max_length=30, choices=CodingExperienceChoices.choices, blank=True, default=CodingExperienceChoices.NONE)
-    #previous_coding_experience = models.ForeignKey(CodingExperience, on_delete=models.SET_NULL, null=True, blank=True)
+    previous_coding_experience = models.CharField(
+        max_length=30, choices=CodingExperienceChoices.choices, blank=True, default=CodingExperienceChoices.NONE
+    )
     last_call = models.DateField(null=True, blank=True)
     next_call = models.DateField(null=True, blank=True)
     value = models.CharField(max_length=50, blank=True)
@@ -103,14 +105,11 @@ class Lead(models.Model):
     device = models.CharField(max_length=5, choices=DeviceChoices.choices, blank=True)
     workshop_batch = models.CharField(max_length=100, blank=True)
     remarks = models.TextField(blank=True)
-
-    # Address fields (all optional)
     address_line_1 = models.CharField(max_length=255, blank=True)
     address_line_2 = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=100, blank=True)
     county = models.CharField(max_length=100, blank=True)
     post_code = models.CharField(max_length=20, blank=True)
-
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='leads')
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -121,7 +120,6 @@ class Lead(models.Model):
     @property
     def is_converted(self):
         return self.status == self.StatusChoices.CONVERTED
-
 
 class Enrollment(models.Model):
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='enrollments', null=True, blank=True)
