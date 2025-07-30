@@ -6,7 +6,24 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'role']
+        fields = ['id','username', 'email', 'password', 'role']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            user = request.user
+            if user.role == User.Roles.SUPERADMIN:
+                self.fields['role'].choices = [
+                    (User.Roles.ADMIN, "Admin"),
+                    (User.Roles.SALES_REP, "Sales Representative"),
+                ]
+            elif user.role == User.Roles.ADMIN:
+                self.fields['role'].choices = [
+                    (User.Roles.SALES_REP, "Sales Representative"),
+                ]
+            else:
+                self.fields['role'].choices = []
 
     def create(self, validated_data):
         password = validated_data.pop('password')

@@ -3,34 +3,51 @@ from rest_framework.response import Response
 from .models import User
 from .serializers import UserRegisterSerializer
 
-class AdminListCreateView(generics.ListCreateAPIView):
-    queryset = User.objects.filter(role=User.Roles.ADMIN)
+class UserListCreateView(generics.ListCreateAPIView):
+    queryset = User.objects.all()
     serializer_class = UserRegisterSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         current_user = request.user
-        if current_user.role != User.Roles.SUPERADMIN:
-            return Response({'error': 'Only superadmin can create admin.'}, status=status.HTTP_403_FORBIDDEN)
-        data = request.data.copy()
-        data['role'] = User.Roles.ADMIN
-        serializer = self.get_serializer(data=data)
+        requested_role = request.data.get('role')
+
+        # Superadmin can create admin and sales_rep
+        if current_user.role == User.Roles.SUPERADMIN:
+            if requested_role not in [User.Roles.ADMIN, User.Roles.SALES_REP]:
+                return Response({'error': 'Superadmin can only create admin or sales_rep.'}, status=status.HTTP_403_FORBIDDEN)
+        # Admin can only create sales_rep
+        elif current_user.role == User.Roles.ADMIN:
+            if requested_role != User.Roles.SALES_REP:
+                return Response({'error': 'Admin can only create sales_rep.'}, status=status.HTTP_403_FORBIDDEN)
+        # Sales rep cannot create users
+        else:
+            return Response({'error': 'Sales rep cannot create users.'}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({'message': 'Admin registered successfully.'}, status=status.HTTP_201_CREATED)
+        return Response({'message': f'{requested_role.replace("_", " ").title()} registered successfully.'}, status=status.HTTP_201_CREATED)
 
-class SalesRepListCreateView(generics.ListCreateAPIView):
-    queryset = User.objects.filter(role=User.Roles.SALES_REP)
+
+class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
     serializer_class = UserRegisterSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def create(self, request, *args, **kwargs):
-        current_user = request.user
-        if current_user.role not in [User.Roles.SUPERADMIN, User.Roles.ADMIN]:
-            return Response({'error': 'Only superadmin or admin can create sales rep.'}, status=status.HTTP_403_FORBIDDEN)
-        data = request.data.copy()
-        data['role'] = User.Roles.SALES_REP
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({'message': 'Sales rep registered successfully.'}, status=status.HTTP_201_CREATED)
+    def get_object(self):
+        obj = super().get_object()
+        current_user = self.request.user
+
+        # Superadmin can edit/delete admin and sales_rep
+        if current_user.role == User.Roles.SUPERADMIN:
+            if obj.role not in [User.Roles.ADMIN, User.Roles.SALES_REP]:
+                raise permissions.PermissionDenied("Superadmin can only manage admin or sales_rep.")
+        # Admin can edit/delete sales_rep only
+        elif current_user.role == User.Roles.ADMIN:
+            if obj.role != User.Roles.SALES_REP:
+                raise permissions.PermissionDenied("Admin can only manage sales_rep.")
+        # Sales rep cannot edit/delete any user
+        else:
+            raise permissions.PermissionDenied("Sales rep cannot manage users.")
+        return obj
