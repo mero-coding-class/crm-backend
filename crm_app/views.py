@@ -1,7 +1,20 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from .models import User
-from .serializers import UserRegisterSerializer
+from .models import User, Course
+from .serializers import *
+from .permissions import IsSuperadminOrAdmin
+
+class CourseListCreateView(generics.ListCreateAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+    permission_classes = [IsSuperadminOrAdmin]
+
+
+class CourseRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+    permission_classes = [IsSuperadminOrAdmin]
+
 
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -51,3 +64,6 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         else:
             raise permissions.PermissionDenied("Sales rep cannot manage users.")
         return obj
+    
+
+
