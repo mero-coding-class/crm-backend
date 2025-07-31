@@ -1,13 +1,16 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from .models import User, Course
+from .models import User, Course, Enrollment
 from .serializers import *
 from .permissions import IsSuperadminOrAdmin
 
 class LeadListCreateView(generics.ListCreateAPIView):
-    queryset = Lead.objects.all()
     serializer_class = LeadSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Only show leads that are not converted
+        return Lead.objects.exclude(status=Lead.StatusChoices.CONVERTED)
 
 
 class LeadRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -15,17 +18,45 @@ class LeadRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = LeadSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        prev_status = instance.status
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        updated_lead = serializer.save()
+
+        if prev_status != Lead.StatusChoices.CONVERTED and updated_lead.status == Lead.StatusChoices.CONVERTED:
+            if not Enrollment.objects.filter(lead=updated_lead).exists():
+                Enrollment.objects.create(
+                    lead=updated_lead,
+                    course=updated_lead.course
+                )
+        return Response(serializer.data)
+
 
 class CourseListCreateView(generics.ListCreateAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     permission_classes = [IsSuperadminOrAdmin]
 
-
+    
 class CourseRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     permission_classes = [IsSuperadminOrAdmin]
+
+
+class EnrollmentListView(generics.ListAPIView):
+    queryset = Enrollment.objects.all()
+    serializer_class = EnrollmentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class EnrollmentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Enrollment.objects.all()
+    serializer_class = EnrollmentSerializer
+    permission_class = [permissions.IsAuthenticated]
 
 
 class UserListCreateView(generics.ListCreateAPIView):

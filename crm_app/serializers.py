@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Course, Lead
+from .models import User, Course, Lead, Enrollment
 
 class LeadSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,6 +11,17 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ['id', 'course_name']
+
+
+class EnrollmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enrollment
+        fields = '__all__'
+
+    def validate_lead(self, lead):
+        if lead.status != lead.StatusChoices.CONVERTED:
+            raise serializers.ValidationError("Only leads with status 'Converted' can be enrolled.")
+        return lead
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
