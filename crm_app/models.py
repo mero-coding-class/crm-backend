@@ -7,7 +7,7 @@ class User(AbstractUser):
         ADMIN = 'admin', 'Admin'
         SALES_REP = 'sales_rep', 'Sales Representative'
     
-    role = models.CharField(max_length=20, choices=Roles.choices, default=Roles.SALES_REP)
+    role = models.CharField(max_length=20, choices=Roles.choices, default=Roles.SUPERADMIN)
 
     def is_superadmin(self):
         return self.role == self.Roles.SUPERADMIN
