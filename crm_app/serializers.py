@@ -14,9 +14,33 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class EnrollmentSerializer(serializers.ModelSerializer):
+    # Include lead fields for display
+    student_name = serializers.CharField(source='lead.student_name', read_only=True)
+    parents_name = serializers.CharField(source='lead.parents_name', read_only=True)
+    email = serializers.EmailField(source='lead.email', read_only=True)
+    phone_number = serializers.CharField(source='lead.phone_number', read_only=True)
+    course_name = serializers.CharField(source='course.course_name', read_only=True)
+
     class Meta:
         model = Enrollment
-        fields = '__all__'
+        fields = [
+            'id',
+            'lead',
+            'course',
+            'student_name',
+            'parents_name', 
+            'email',
+            'phone_number',
+            'course_name',
+            'total_payment',
+            'first_installment',
+            'second_installment', 
+            'third_installment',
+            'last_pay_date',
+            'payment_completed',
+            'created_at',
+            'updated_at'
+        ]
 
     def validate_lead(self, lead):
         if lead.status != lead.StatusChoices.CONVERTED:

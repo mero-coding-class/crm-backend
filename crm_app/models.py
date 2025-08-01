@@ -107,7 +107,7 @@ class Lead(models.Model):
     source = models.CharField(max_length=30, choices=SourceChoices.choices)
     course = models.ForeignKey('Course', on_delete=models.SET_NULL, null=True)
     class_type = models.CharField(max_length=20, choices=ClassTypeChoices.choices)
-
+    
     # All other fields are optional
     shift = models.CharField(max_length=50, choices = ShiftChoices.choices ,blank=True)
     previous_coding_experience = models.CharField(

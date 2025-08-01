@@ -11,6 +11,16 @@ class LeadListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         # Only show leads that are not converted
         return Lead.objects.exclude(status=Lead.StatusChoices.CONVERTED)
+    
+    def perform_create(self, serializer):
+        lead = serializer.save()
+        # If lead is created with Converted status, create enrollment
+        if lead.status == Lead.StatusChoices.CONVERTED:
+            if not Enrollment.objects.filter(lead=lead).exists():
+                Enrollment.objects.create(
+                    lead=lead,
+                    course=lead.course
+                )
 
 
 class LeadRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -56,7 +66,7 @@ class EnrollmentListView(generics.ListAPIView):
 class EnrollmentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Enrollment.objects.all()
     serializer_class = EnrollmentSerializer
-    permission_class = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class UserListCreateView(generics.ListCreateAPIView):
@@ -106,7 +116,4 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         # Sales rep cannot edit/delete any user
         else:
             raise permissions.PermissionDenied("Sales rep cannot manage users.")
-        return obj
-    
-
-
+        return obj  
