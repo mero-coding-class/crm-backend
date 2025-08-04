@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from .models import User, Course, Enrollment
 from .serializers import *
 from .permissions import IsSuperadminOrAdmin
+from rest_framework.decorators import action
 
 class LeadListCreateView(generics.ListCreateAPIView):
     serializer_class = LeadSerializer
@@ -10,7 +11,7 @@ class LeadListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         # Only show leads that are not converted
-        return Lead.objects.exclude(status=Lead.StatusChoices.CONVERTED)
+        return Lead.objects.exclude(status__in=[Lead.StatusChoices.CONVERTED, Lead.StatusChoices.LOST, Lead.StatusChoices.JUNK])
     
     def perform_create(self, serializer):
         lead = serializer.save()
@@ -68,6 +69,27 @@ class EnrollmentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView)
     serializer_class = EnrollmentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
+class TrashListView(generics.ListAPIView):
+    serializer_class = LeadSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Only show leads with lost or junk status
+        return Lead.objects.filter(status__in=[Lead.StatusChoices.LOST, Lead.StatusChoices.JUNK])
+    
+
+class TrashRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = LeadSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Only allow operations on leads in trash (lost or junk)
+        return Lead.objects.filter(status__in = [Lead.StatusChoices.LOST, Lead.StatusChoices.JUNK])
+
+    def update(self, request, *args, **kwargs):
+        # Handle restoring leads or updating trash items
+        return super().update(request, *args, **kwargs)
 
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = User.objects.all()
