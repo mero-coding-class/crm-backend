@@ -17,6 +17,6 @@ urlpatterns = [
     path('enrollments/<int:pk>/', EnrollmentRetrieveUpdateDestroyView.as_view(), name='enrollments-update-retrieve-destroy'),
 
     path('trash/', TrashListView.as_view(), name='trash-list'),
-    path('trash/<int:pk>/', TrashRetrieveUpdateDestroyView.as_view(), name='trash-detail')
+    path('trash/<int:pk>/', TrashRetrieveUpdateDestroyView.as_view(), name='trash-detail'),
     # for restore / delete
 ]

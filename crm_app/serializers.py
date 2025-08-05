@@ -46,6 +46,60 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         if lead.status != lead.StatusChoices.CONVERTED:
             raise serializers.ValidationError("Only leads with status 'Converted' can be enrolled.")
         return lead
+    
+
+class TrashLeadSerializer(serializers.ModelSerializer):
+    """Serializer for trash leads that excludes CONVERTED status from choices"""
+    
+    # Explicitly define the status field with limited choices (excluding CONVERTED)
+    status = serializers.ChoiceField(
+        choices=[
+            (Lead.StatusChoices.NEW, 'New'),
+            (Lead.StatusChoices.OPEN, 'Open'),
+            (Lead.StatusChoices.AVERAGE, 'Average'),
+            (Lead.StatusChoices.FOLLOWUP, 'Followup'),
+            (Lead.StatusChoices.INTERESTED, 'Interested'),
+            (Lead.StatusChoices.INPROGRESS, 'In Progress'),
+            (Lead.StatusChoices.ACTIVE, 'Active'),
+            (Lead.StatusChoices.LOST, 'Lost'),
+            (Lead.StatusChoices.JUNK, 'Junk'),
+        ]
+    )
+    
+    # Add course name for display
+    course_name = serializers.CharField(source='course.course_name', read_only=True)
+
+    class Meta:
+        model = Lead
+        fields = [
+            'id',
+            'student_name',
+            'parents_name',
+            'email',
+            'phone_number',
+            'whatsapp_number',
+            'age',
+            'grade',
+            'source',
+            'course',
+            'course_name',
+            'class_type',
+            'shift',
+            'previous_coding_experience',
+            'last_call',
+            'next_call',
+            'device',
+            'status',
+            'remarks',
+            'created_at',
+            'updated_at'
+        ]
+
+    def validate_status(self, value):
+        """Ensure CONVERTED status cannot be set for trash leads"""
+        if value == Lead.StatusChoices.CONVERTED:
+            raise serializers.ValidationError("Cannot set status to 'Converted' for trash leads.")
+        return value
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):

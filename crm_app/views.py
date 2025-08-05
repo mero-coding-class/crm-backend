@@ -71,7 +71,7 @@ class EnrollmentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView)
 
 
 class TrashListView(generics.ListAPIView):
-    serializer_class = LeadSerializer
+    serializer_class = TrashLeadSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
@@ -80,16 +80,17 @@ class TrashListView(generics.ListAPIView):
     
 
 class TrashRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = LeadSerializer
+    serializer_class = TrashLeadSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Only allow operations on leads in trash (lost or junk)
+        # Only allow opreations on leads in trash (lost or junk)
         return Lead.objects.filter(status__in = [Lead.StatusChoices.LOST, Lead.StatusChoices.JUNK])
 
     def update(self, request, *args, **kwargs):
         # Handle restoring leads or updating trash items
         return super().update(request, *args, **kwargs)
+
 
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = User.objects.all()

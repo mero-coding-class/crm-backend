@@ -110,9 +110,7 @@ class Lead(models.Model):
     
     # All other fields are optional
     shift = models.CharField(max_length=50, choices = ShiftChoices.choices ,blank=True)
-    previous_coding_experience = models.CharField(
-        max_length=30, choices=CodingExperienceChoices.choices, blank=True, default=CodingExperienceChoices.NONE
-    )
+    previous_coding_experience = models.CharField(max_length=30, choices=CodingExperienceChoices.choices, blank=True, default=CodingExperienceChoices.NONE)
     last_call = models.DateField(null=True, blank=True)
     next_call = models.DateField(null=True, blank=True)
     value = models.CharField(max_length=50, blank=True)
