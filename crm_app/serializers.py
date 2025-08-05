@@ -1,10 +1,28 @@
 from rest_framework import serializers
-from .models import User, Course, Lead, Enrollment
+from .models import User, Course, Lead, Enrollment, LeadLog
 
 class LeadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lead
         fields = '__all__'
+
+
+class LeadLogSerializer(serializers.ModelSerializer):
+    changed_by_name = serializers.CharField(source='changed_by.username', read_only=True)
+    
+    class Meta:
+        model = LeadLog
+        fields = [
+            'id',
+            'action',
+            'field_changed',
+            'old_value',
+            'new_value',
+            'changed_by',
+            'changed_by_name',
+            'timestamp',
+            'description'
+        ]
 
 
 class CourseSerializer(serializers.ModelSerializer):

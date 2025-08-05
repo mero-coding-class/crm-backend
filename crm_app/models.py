@@ -135,6 +135,36 @@ class Lead(models.Model):
     def is_converted(self):
         return self.status == self.StatusChoices.CONVERTED
 
+
+class LeadLog(models.Model):
+    """Model to track specific changes made to leads"""
+    
+    class ActionChoices(models.TextChoices):
+        CREATED = 'created', 'Created'
+        STATUS_CHANGED = 'status_changed', 'Status Changed'
+        NEXT_CALL_UPDATED = 'next_call_updated', 'Next Call Updated'
+        LAST_CALL_UPDATED = 'last_call_updated', 'Last Call Updated'
+        REMARKS_UPDATED = 'remarks_updated', 'Remarks Updated'
+        MOVED_TO_TRASH = 'moved_to_trash', 'Moved to Trash'
+        RESTORED = 'restored', 'Restored from Trash'
+        ENROLLMENT_CREATED = 'enrollment_created', 'Enrollment Created'
+    
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='logs')
+    action = models.CharField(max_length=20, choices=ActionChoices.choices)
+    field_changed = models.CharField(max_length=50, blank=True)  # Which field was changed
+    old_value = models.TextField(blank=True)  # Previous value
+    new_value = models.TextField(blank=True)  # New value
+    changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True)  # Human readable description
+    
+    class Meta:
+        ordering = ['-timestamp']
+    
+    def __str__(self):
+        return f"{self.lead.student_name} - {self.action} at {self.timestamp}"
+
+
 class Enrollment(models.Model):
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='enrollments', null=True, blank=True)
     course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True)

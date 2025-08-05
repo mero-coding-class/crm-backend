@@ -12,6 +12,7 @@ urlpatterns = [
 
     path('leads/', LeadListCreateView.as_view(), name = 'lead-list-create'),
     path('leads/<int:pk>/', LeadRetrieveUpdateDestroyView.as_view(), name='lead-retrieve-update-destroy'),
+    path('leads/<int:lead_id>/logs/', LeadLogListView.as_view(), name='lead-logs'),
 
     path('enrollments/', EnrollmentListView.as_view(), name='enrollment-list'),
     path('enrollments/<int:pk>/', EnrollmentRetrieveUpdateDestroyView.as_view(), name='enrollments-update-retrieve-destroy'),
