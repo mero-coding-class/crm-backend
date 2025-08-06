@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from .models import User, Course, Enrollment
+from .models import User, Course, Enrollment, Lead, LeadLog
 from .serializers import *
 from .permissions import IsSuperadminOrAdmin
 from rest_framework.decorators import action
@@ -38,7 +38,7 @@ class LeadListCreateView(generics.ListCreateAPIView):
                     changed_by=self.request.user,
                     description="Enrollment created automatically"
                 )
-    
+
 
 class LeadRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Lead.objects.all()
@@ -170,7 +170,7 @@ class TrashListView(generics.ListAPIView):
 class TrashRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TrashLeadSerializer
     permission_classes = [permissions.IsAuthenticated]
-
+ 
     def get_queryset(self):
         # Only allow operations on leads in trash (lost or junk)
         return Lead.objects.filter(status__in=[Lead.StatusChoices.LOST, Lead.StatusChoices.JUNK])
