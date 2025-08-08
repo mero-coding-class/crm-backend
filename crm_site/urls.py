@@ -6,7 +6,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('crm_app.urls')),
-    path('api/auth/', include('dj_rest_auth.urls')),  # login, logout, password reset
 ]
 
 if settings.DEBUG:
